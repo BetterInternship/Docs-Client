@@ -4,7 +4,7 @@ const apiUrls = [
   process.env.NEXT_PUBLIC_DOCS_URL,
   process.env.NEXT_PUBLIC_API_SERVER_URL,
   "https://storage.googleapis.com/better-internship-public-bucket",
-].filter(Boolean);
+].filter((url): url is string => Boolean(url));
 
 const connectOrigins = apiUrls
   .map((url) => {
