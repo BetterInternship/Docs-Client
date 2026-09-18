@@ -305,7 +305,7 @@ export default function MyFormsTable({
     try {
       const fetchPromises = Array.from(selectedFormTypes).map(async (formName) => {
         const response = await fetchExportData({
-          data: { signatoryId: profile.id, formName },
+          data: { formName },
         });
 
         // parse and conform variables to RowEntry format.

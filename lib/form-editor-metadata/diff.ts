@@ -349,8 +349,8 @@ function getFieldDeltas(
   const deltas: FieldDelta[] = [];
   for (const key of keys) {
     if (skip.has(key)) continue;
-    const bVal = (before as Record<string, unknown>)[key];
-    const aVal = (after as Record<string, unknown>)[key];
+    const bVal = (before as unknown as Record<string, unknown>)[key];
+    const aVal = (after as unknown as Record<string, unknown>)[key];
     if (stableStringify(bVal) !== stableStringify(aVal)) {
       if (
         (key === "field_schema" || key === "phantom_field_schema") &&
