@@ -38,7 +38,7 @@ const toMDY = (d?: string) => {
 /* ---------- mapper: backend → UI (CompanyRequest) ---------- */
 // ! remove this eventually, i dont think we need a mapper
 const mapRequestRow = (r: RawCompanyRequest): CompanyRequest => {
-  const e = r.entities ?? {};
+  const e: Partial<NonNullable<RawCompanyRequest["entities"]>> = r.entities ?? {};
   const companyName =
     (e.display_name && e.display_name.trim()) ||
     (e.legal_identifier && e.legal_identifier.trim()) ||
@@ -82,7 +82,7 @@ export function useCompanyRequests(opts?: { offset?: number; limit?: number }) {
         "/api/schools/company-requests",
         { params: { offset, limit } }
       );
-      return (res?.requests ?? (res as any)?.data?.requests ?? []) as RawCompanyRequest[];
+      return res.data.requests ?? [];
     },
     staleTime: 10_000,
     refetchOnWindowFocus: false,
@@ -98,9 +98,7 @@ export function useCompanyRequest(entityId?: string) {
       const res = await preconfiguredAxios.get<{ requests: RawCompanyRequest[] }>(
         `/api/schools/company-requests/${entityId}`
       );
-      const row = (res?.requests ?? (res as any)?.data?.requests ?? [])[0] as
-        | RawCompanyRequest
-        | undefined;
+      const row = res.data.requests?.[0];
       return row ? mapRequestRow(row) : null;
     },
     staleTime: 10_000,
