@@ -84,7 +84,7 @@ function useFormActionController() {
             modalRegistry.specifySigningParties.close();
             modalRegistry.formContinuationSuccess.open();
           },
-          updateAutofill,
+          (values: FormValues) => updateAutofill(form.formName, form.fields, values),
           {},
           autofillValues,
           form.formMetadata.getSigningParties()

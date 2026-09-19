@@ -12,7 +12,7 @@ const checkPathVariants = {
     transition: {
       delay: 0.12,
       duration: 0.3,
-      ease: "easeOut",
+      ease: "easeOut" as const,
     },
   },
 };
@@ -20,19 +20,19 @@ const checkPathVariants = {
 const iconAnimation = {
   initial: { scale: 0.9, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
-  transition: { duration: 0.22, ease: "easeOut" },
+  transition: { duration: 0.22, ease: "easeOut" as const },
 };
 
 const contentAnimation = {
   initial: { y: 8, opacity: 0 },
   animate: { y: 0, opacity: 1 },
-  transition: { delay: 0.08, duration: 0.24, ease: "easeOut" },
+  transition: { delay: 0.08, duration: 0.24, ease: "easeOut" as const },
 };
 
 const buttonAnimation = {
   initial: { y: 8, opacity: 0 },
   animate: { y: 0, opacity: 1 },
-  transition: { delay: 0.14, duration: 0.24, ease: "easeOut" },
+  transition: { delay: 0.14, duration: 0.24, ease: "easeOut" as const },
 };
 
 function AnimatedCheck() {

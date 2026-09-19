@@ -7,6 +7,6 @@
  */
 
 export interface FormSubscriber {
-  name: string;
+  name?: string;
   email: string;
 }

@@ -260,7 +260,7 @@ const FormPreviewContentBody = ({
         formName: formMetadata.name,
         values: testValues,
       });
-      const url = result?.data?.documentUrl || result?.documentUrl;
+      const url = result?.documentUrl;
       if (url) setGenerationResult(url);
     } catch (error) {
       console.error("Failed to generate test form", error);

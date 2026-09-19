@@ -9,6 +9,6 @@ import type { FormPhantomFieldValidatorIrRulesItemOneOfOnefourKind } from "./for
 
 export type FormPhantomFieldValidatorIrRulesItemOneOfOnefour = {
   kind: FormPhantomFieldValidatorIrRulesItemOneOfOnefourKind;
-  field: string;
+  businessDays: number;
   message?: string;
 };

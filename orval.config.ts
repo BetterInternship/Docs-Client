@@ -5,6 +5,7 @@ export default defineConfig({
     input: { target: "./app/api/spec.json" },
     output: {
       mode: "tags-split",
+      clean: true,
       target: "./app/api/endpoints",
       schemas: "./app/api/models",
       workspace: "./app/api/",

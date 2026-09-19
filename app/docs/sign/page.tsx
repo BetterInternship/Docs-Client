@@ -48,8 +48,8 @@ const areFormValuesEqual = (left: Record<string, string>, right: Record<string, 
   return leftEntries.every(([key, value]) => right[key] === value);
 };
 
-const getCanonicalSignatureFields = (
-  signatureFields: (ClientField<any[]> | ClientPhantomField<any[]>)[]
+const getCanonicalSignatureFields = <T extends any[]>(
+  signatureFields: (ClientField<T> | ClientPhantomField<T>)[]
 ) => {
   const seenRecipientIds = new Set<string>();
   return signatureFields.filter((signatureField) => {
@@ -160,16 +160,17 @@ function PageContent() {
   }, [formProcess.id, profile.id]);
 
   useEffect(() => {
-    if (!formProcess.my_signing_party_id || !form.formName) return;
+    const mySigningPartyId = formProcess.my_signing_party_id;
+    if (!mySigningPartyId || !form.formName) return;
 
     const initForm = async () => {
       const signatureFields = form.formMetadata.getSignatureFieldsForClientService(
-        formProcess.my_signing_party_id
+        mySigningPartyId
       );
       const valuesWithPrefilledSignatures = form.formMetadata.setSignatureValueForSigningParty(
         formFiller.getFinalValues(autofillValues),
         profile.name,
-        formProcess.my_signing_party_id
+        mySigningPartyId
       );
       const signatureImagePreference = autofillValues.__signature_image_enabled;
 
@@ -495,7 +496,7 @@ function PageContent() {
                   <div className="border-b border-gray-300 bg-white">
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5 sm:px-4">
                       <div className="flex min-w-0 flex-1 items-center gap-2">
-                        {shouldShowSignIntentGate && currentView !== "choice" && (
+                        {shouldShowSignIntentGate && (
                           <Button
                             type="button"
                             variant="ghost"

@@ -186,7 +186,7 @@ const FormDefaultValueCaptureContent = ({
                 blocks={filteredBlocks}
                 values={previewValues}
                 onFieldClick={(fieldName) => setSelectedFieldId(fieldName)}
-                selectedFieldId={selectedFieldId}
+                selectedFieldId={selectedFieldId ?? undefined}
                 prefillMode="dummy"
                 prefillUser={DEFAULT_PREVIEW_DUMMY_STUDENT_USER}
               />
