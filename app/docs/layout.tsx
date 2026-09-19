@@ -9,12 +9,12 @@ import { useSignatoryProfile } from "./auth/provider/signatory.ctx";
 import { ChevronDown } from "lucide-react";
 
 const PUBLIC_ROUTE_PREFIXES = ["/login", "/sign-in", "/auth/magic-link"];
-const ROUTE_ACCESS_RULES = [
+const ROUTE_ACCESS_RULES: readonly { prefix: string; requireGod?: boolean }[] = [
   { prefix: "/ft2mkyEVxHrAJwaphVVSop3TIau0pWDq", requireGod: true },
   { prefix: "/dashboard" },
   { prefix: "/forms" },
   { prefix: "/students" },
-] as const;
+];
 
 function normalizeDocsPath(pathname: string) {
   return pathname.startsWith("/docs/") ? pathname.slice("/docs".length) : pathname;

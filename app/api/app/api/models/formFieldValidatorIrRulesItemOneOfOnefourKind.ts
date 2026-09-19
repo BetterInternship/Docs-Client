@@ -11,6 +11,5 @@ export type FormFieldValidatorIrRulesItemOneOfOnefourKind =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FormFieldValidatorIrRulesItemOneOfOnefourKind = {
-  dateOnOrAfterField: "dateOnOrAfterField",
-  dateOnOrBeforeField: "dateOnOrBeforeField",
+  dateOnOrAfterBusinessDays: "dateOnOrAfterBusinessDays",
 } as const;

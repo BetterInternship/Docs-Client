@@ -5,7 +5,6 @@ import { useFormEditorMetadata } from "@/app/contexts/form-editor-metadata.conte
 import { useEditorSelection } from "@/app/contexts/editor-selection.context";
 import { Button } from "@/components/ui/button";
 import { Save, Settings, ArrowLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { formatWhen } from "@/lib/format";
 import { SaveConfirmDialog } from "@/components/editor/SaveConfirmDialog";
 
@@ -64,7 +63,6 @@ export function EditorToolbar() {
             variant="outline"
             size="sm"
             onClick={() => setActiveTab("settings")}
-            className={cn(activeTab === "settings" && "border-primary text-primary")}
             title="Settings"
           >
             <Settings className="h-4 w-4" />

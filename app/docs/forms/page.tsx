@@ -20,18 +20,11 @@ import { Button } from "@/components/ui/button";
 import { FormDefaultValueCapture } from "@/components/docs/form-editor/form-layout/FormDefaultValueCapture";
 import { getFormFields } from "@/app/api/forms.api";
 import MyFormsTableLike from "@/components/docs/forms/MyFormTableLike";
+import type { FormItem } from "@/components/docs/MyFormRow";
 import { FormMetadata, IFormMetadata } from "@betterinternship/core/forms";
 import { getViewableForms } from "@/app/api/docs.api";
 import { CompleteProfileModal } from "@/components/docs/modals/CompleteProfileModal";
 import useModalRegistry from "@/components/modal-registry";
-
-type FormItem = {
-  name: string;
-  label: string;
-  enabledAutosign: boolean;
-  party: string;
-  order?: number;
-};
 
 export default function DocsFormsPage() {
   const router = useRouter();
@@ -74,7 +67,8 @@ export default function DocsFormsPage() {
               label: formData.formMetadata?.label || name,
               enabledAutosign: !!partySettings?.autosign,
               party: firstPartyId ?? "",
-              date: partySettings?.autosign_last_update ?? "",
+              // Docs-Server writes `<setting>_last_update` as Date.now().
+              date: (partySettings?.autosign_last_update as number | undefined) ?? "",
             };
           } catch (error) {
             console.warn(`[Form Automation] Skipping unavailable form ${name}:`, error);

@@ -14,7 +14,6 @@ export default function MyFormsTableLike({
   isLoadingForms,
 }: {
   rows: FormItem[];
-  onPreview: (name: string) => void;
   onOpenAutoSignForm: (name: string, party: string, currentValue: boolean) => void;
   toggleAutoSign: (name: string, party: string, currentValue: boolean) => void;
   togglingName?: string | null;
