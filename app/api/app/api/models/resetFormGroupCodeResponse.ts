@@ -6,7 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface FormSubscriber {
-  name?: string;
-  email: string;
+export interface ResetFormGroupCodeResponse {
+  success: boolean;
+  message: string;
+  code: string;
 }

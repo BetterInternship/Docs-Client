@@ -5,8 +5,9 @@
  * The official API of the BetterInternship MOA platform.
  * OpenAPI spec version: 1.0
  */
+import type { GenerateTestFormDtoValues } from "./generateTestFormDtoValues";
 
-export interface FormSubscriber {
-  name?: string;
-  email: string;
+export interface GenerateTestFormDto {
+  formName: string;
+  values: GenerateTestFormDtoValues;
 }

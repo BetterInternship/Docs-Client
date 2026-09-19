@@ -46,6 +46,8 @@ import type {
   FormsControllerGetRegistryFormDocumentParams,
   FormsControllerGetRegistryFormMetadataParams,
   FormsControllerMarkFormAsFirstViewedParams,
+  GenerateTestFormDto,
+  GenerateTestFormResponse,
   GetExportForSignatoryDto,
   InitiateFormDto,
   MqJobQueuedResponse,
@@ -3288,14 +3290,14 @@ export const useFormsControllerFilloutFormProcessInternally = <
   return useMutation(mutationOptions, queryClient);
 };
 export const formsControllerGenerateTestForm = (
-  initiateFormDto: InitiateFormDto,
+  generateTestFormDto: GenerateTestFormDto,
   signal?: AbortSignal
 ) => {
-  return preconfiguredAxiosFunction<BaseResponse>({
+  return preconfiguredAxiosFunction<GenerateTestFormResponse>({
     url: `/api/forms/test-generate`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    data: initiateFormDto,
+    data: generateTestFormDto,
     signal,
   });
 };
@@ -3307,13 +3309,13 @@ export const getFormsControllerGenerateTestFormMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof formsControllerGenerateTestForm>>,
     TError,
-    { data: InitiateFormDto },
+    { data: GenerateTestFormDto },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof formsControllerGenerateTestForm>>,
   TError,
-  { data: InitiateFormDto },
+  { data: GenerateTestFormDto },
   TContext
 > => {
   const mutationKey = ["formsControllerGenerateTestForm"];
@@ -3325,7 +3327,7 @@ export const getFormsControllerGenerateTestFormMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof formsControllerGenerateTestForm>>,
-    { data: InitiateFormDto }
+    { data: GenerateTestFormDto }
   > = (props) => {
     const { data } = props ?? {};
 
@@ -3338,7 +3340,7 @@ export const getFormsControllerGenerateTestFormMutationOptions = <
 export type FormsControllerGenerateTestFormMutationResult = NonNullable<
   Awaited<ReturnType<typeof formsControllerGenerateTestForm>>
 >;
-export type FormsControllerGenerateTestFormMutationBody = InitiateFormDto;
+export type FormsControllerGenerateTestFormMutationBody = GenerateTestFormDto;
 export type FormsControllerGenerateTestFormMutationError = ErrorResponse;
 
 export const useFormsControllerGenerateTestForm = <TError = ErrorResponse, TContext = unknown>(
@@ -3346,7 +3348,7 @@ export const useFormsControllerGenerateTestForm = <TError = ErrorResponse, TCont
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof formsControllerGenerateTestForm>>,
       TError,
-      { data: InitiateFormDto },
+      { data: GenerateTestFormDto },
       TContext
     >;
   },
@@ -3354,7 +3356,7 @@ export const useFormsControllerGenerateTestForm = <TError = ErrorResponse, TCont
 ): UseMutationResult<
   Awaited<ReturnType<typeof formsControllerGenerateTestForm>>,
   TError,
-  { data: InitiateFormDto },
+  { data: GenerateTestFormDto },
   TContext
 > => {
   const mutationOptions = getFormsControllerGenerateTestFormMutationOptions(options);

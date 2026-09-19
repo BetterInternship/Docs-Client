@@ -12,6 +12,7 @@ import type { UpdateFieldDtoValidatorIrRulesItemOneOfEight } from "./updateField
 import type { UpdateFieldDtoValidatorIrRulesItemOneOfOnezero } from "./updateFieldDtoValidatorIrRulesItemOneOfOnezero";
 import type { UpdateFieldDtoValidatorIrRulesItemOneOfOnetwo } from "./updateFieldDtoValidatorIrRulesItemOneOfOnetwo";
 import type { UpdateFieldDtoValidatorIrRulesItemOneOfOnefour } from "./updateFieldDtoValidatorIrRulesItemOneOfOnefour";
+import type { UpdateFieldDtoValidatorIrRulesItemOneOfOnesix } from "./updateFieldDtoValidatorIrRulesItemOneOfOnesix";
 
 export type UpdateFieldDtoValidatorIrRulesItem =
   | UpdateFieldDtoValidatorIrRulesItemOneOf
@@ -20,4 +21,5 @@ export type UpdateFieldDtoValidatorIrRulesItem =
   | UpdateFieldDtoValidatorIrRulesItemOneOfEight
   | UpdateFieldDtoValidatorIrRulesItemOneOfOnezero
   | UpdateFieldDtoValidatorIrRulesItemOneOfOnetwo
-  | UpdateFieldDtoValidatorIrRulesItemOneOfOnefour;
+  | UpdateFieldDtoValidatorIrRulesItemOneOfOnefour
+  | UpdateFieldDtoValidatorIrRulesItemOneOfOnesix;

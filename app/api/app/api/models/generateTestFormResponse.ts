@@ -6,7 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface FormSubscriber {
-  name?: string;
-  email: string;
+export interface GenerateTestFormResponse {
+  success: boolean;
+  message: string;
+  documentId: string;
+  documentUrl: string;
 }

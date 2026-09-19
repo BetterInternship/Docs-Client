@@ -6,7 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface FormSubscriber {
-  name?: string;
-  email: string;
-}
+export type GenerateTestFormDtoValues = { [key: string]: unknown };
