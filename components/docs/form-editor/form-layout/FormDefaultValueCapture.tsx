@@ -167,7 +167,10 @@ const FormDefaultValueCaptureContent = ({
                 selectedPreviewId={selectedFieldId}
                 onSelectedPreviewId={setSelectedFieldId}
               >
-                <FormPreviewRenderer onFieldClick={setSelectedFieldId} />
+                <FormPreviewRenderer
+                  onFieldClick={setSelectedFieldId}
+                  selectedPartyId={selectedPartyId}
+                />
               </StaticFormRendererContextProvider>
             ) : (
               <div className="rounded bg-slate-50 p-8 text-center">
