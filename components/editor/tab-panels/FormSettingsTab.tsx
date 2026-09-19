@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { FormMetadataTab } from "@/components/editor/tab-panels/FormMetadataTab";
 import { SigningPartiesTab } from "@/components/editor/tab-panels/SigningPartiesTab";
 import { SubscribersTab } from "@/components/editor/tab-panels/SubscribersTab";
-import FieldRegistryPage from "@/app/docs/ft2mkyEVxHrAJwaphVVSop3TIau0pWDq/fields/page";
+import FieldRegistry from "@/components/editor/FieldRegistry";
 import { cn } from "@/lib/utils";
 import { useSignedUrl } from "@/lib/signed-url";
 import { toast } from "sonner";
@@ -109,7 +109,7 @@ export function FormSettingsTab() {
         {section === "subscribers" && <SubscribersTab />}
         {section === "field-registry" && (
           <div className="h-full min-h-0 p-4">
-            <FieldRegistryPage embedded />
+            <FieldRegistry embedded />
           </div>
         )}
       </div>
