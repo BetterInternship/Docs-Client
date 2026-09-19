@@ -74,24 +74,7 @@ const FormDefaultValueCaptureContent = ({
 
     const initialValues: Record<string, string> = {};
 
-    // First, add default values from metadata
-    const defaultValues = metadata?.schema?.blocks
-      ?.filter((b) => b.block_type === "form_field")
-      .reduce(
-        (acc, block) => {
-          if (block.field_schema?.default_value) {
-            acc[block.field_schema.field] = block.field_schema.default_value;
-          }
-          return acc;
-        },
-        {} as Record<string, string>
-      );
-
-    if (defaultValues) {
-      Object.assign(initialValues, defaultValues);
-    }
-
-    // Then, add values from prefiller (prefiller takes precedence)
+    // First, add values from prefiller
     Object.assign(initialValues, extractPrefillValues(fields, { trim: true }));
 
     // Finally, add autofill values (autofill takes highest precedence)
