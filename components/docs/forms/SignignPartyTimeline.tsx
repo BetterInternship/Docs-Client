@@ -8,6 +8,7 @@ export interface SigningPartyMapParty {
   signed?: boolean;
   signatory_title?: string;
   signatory_email?: string;
+  signatory_email_options?: string[];
 }
 
 interface SigningPartyTimelineProps {
