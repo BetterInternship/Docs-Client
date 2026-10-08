@@ -407,7 +407,15 @@ export function diffFormMetadata(
     if (!pp) parties.push({ kind: "added", id, label: np!.signatory_title });
     else if (!np) parties.push({ kind: "removed", id, label: pp.signatory_title });
     else if (stableStringify(pp) !== stableStringify(np))
-      parties.push({ kind: "modified", id, label: np.signatory_title });
+      parties.push({
+        kind: "modified",
+        id,
+        label:
+          stableStringify(pp.signatory_email_options) !==
+          stableStringify(np.signatory_email_options)
+            ? `${np.signatory_title} — email choices updated`
+            : np.signatory_title,
+      });
   }
 
   // Subscribers

@@ -13,6 +13,7 @@ export interface FormSigningParty {
   order: number;
   signatory_title: string;
   signatory_account?: FormSignatory;
+  signatory_email_options?: string[];
   signatory_source?: SignatorySource;
   signed?: boolean;
 }

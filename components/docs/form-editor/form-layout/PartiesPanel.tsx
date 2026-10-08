@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { type IFormSigningParty } from "@betterinternship/core/forms";
+import { getRecipientEmailOptions, type IFormSigningParty } from "@betterinternship/core/forms";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getPartyColorByOrder, getPartyDisplayTitle } from "@betterinternship/core/pdf-viewer";
-import { Plus, Trash2, GripVertical, ChevronDown } from "lucide-react";
+import { Plus, Trash2, GripVertical, ChevronDown, ArrowUp, ArrowDown } from "lucide-react";
 
 interface PartiesPanelProps {
   parties: IFormSigningParty[];
@@ -22,7 +22,15 @@ type PartySaveOverrides = {
   isEmail?: boolean;
 };
 
-export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) => {
+export const PartiesPanel = ({
+  parties,
+  onPartiesChange: emitPartiesChange,
+}: PartiesPanelProps) => {
+  const lastEmittedParties = useRef<string | null>(null);
+  const onPartiesChange = (next: IFormSigningParty[]) => {
+    lastEmittedParties.current = JSON.stringify(next);
+    emitPartiesChange(next);
+  };
   const safeParties = parties || [];
   const orderedParties = [...safeParties].sort((a, b) => a.order - b.order);
 
@@ -41,12 +49,24 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
   const latestEmailModesRef = useRef<Record<string, boolean>>(emailModes);
   const onPartiesChangeRef = useRef(onPartiesChange);
 
+  // History changes come from metadata; preserve local drafts only for our own edits.
+  useEffect(() => {
+    if (JSON.stringify(parties) === lastEmittedParties.current) return;
+    lastEmittedParties.current = null;
+    setEditValues(Object.fromEntries(parties.map((party) => [party._id, party])));
+    setEmailModes(
+      Object.fromEntries(parties.map((party) => [party._id, !!party.signatory_account]))
+    );
+    setValidationErrors({});
+  }, [parties]);
+
   const resolveIsEmailMode = (
     partyId: string,
     values?: Partial<IFormSigningParty>,
     override?: boolean
   ) => {
     if (override !== undefined) return override;
+    if (values?.signatory_email_options !== undefined) return false;
     const hasEmail = !!values?.signatory_account?.email?.trim();
     return hasEmail || !!emailModes[partyId];
   };
@@ -121,6 +141,13 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
       } else if (!values?.signatory_source?._id) {
         errors.source = "Select a source";
       }
+      if (values?.signatory_email_options !== undefined) {
+        try {
+          getRecipientEmailOptions(values);
+        } catch (error) {
+          errors.source = error instanceof Error ? error.message : "Check the email choices";
+        }
+      }
     }
 
     setValidationErrors((prev) => ({ ...prev, [partyId]: errors }));
@@ -139,16 +166,21 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
     const updatedParties = orderedParties.map((p) => {
       if (p._id !== partyId) return p;
 
-      const party = { ...p, ...values } as IFormSigningParty;
+      const party = { ...p, ...values, order: p.order } as IFormSigningParty;
 
       if (findIndex === 0) {
         party.signatory_account = undefined;
         party.signatory_source = undefined;
+        party.signatory_email_options = undefined;
       } else if (isEmail) {
         party.signatory_source = undefined;
+        party.signatory_email_options = undefined;
       } else {
         if (party.signatory_source) {
-          party.signatory_source.label = `${values?.signatory_title || "Party"} Email Address`;
+          party.signatory_source = {
+            ...party.signatory_source,
+            label: `${values?.signatory_title || "Party"} Email Address`,
+          };
         }
         party.signatory_account = undefined;
       }
@@ -179,16 +211,21 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
       const updatedParties = latestOrderedParties.map((party, index) => {
         const values = latestEditValues[party._id] ?? party;
         const isEmail = !!values?.signatory_account?.email?.trim() || !!latestEmailModes[party._id];
-        const nextParty = { ...party, ...values } as IFormSigningParty;
+        const nextParty = { ...party, ...values, order: party.order } as IFormSigningParty;
 
         if (index === 0) {
           nextParty.signatory_account = undefined;
           nextParty.signatory_source = undefined;
+          nextParty.signatory_email_options = undefined;
         } else if (isEmail) {
           nextParty.signatory_source = undefined;
+          nextParty.signatory_email_options = undefined;
         } else {
           if (nextParty.signatory_source) {
-            nextParty.signatory_source.label = `${values?.signatory_title || "Party"} Email Address`;
+            nextParty.signatory_source = {
+              ...nextParty.signatory_source,
+              label: `${values?.signatory_title || "Party"} Email Address`,
+            };
           }
           nextParty.signatory_account = undefined;
         }
@@ -218,6 +255,34 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
     onPartiesChange(updatedParties);
   };
 
+  const updateEmailOptions = (
+    partyId: string,
+    values: Partial<IFormSigningParty>,
+    options: string[] | undefined
+  ) => {
+    const nextValues = {
+      ...values,
+      signatory_email_options: options,
+      signatory_account: undefined,
+      signatory_source: values.signatory_source?._id
+        ? values.signatory_source
+        : {
+            _id: orderedParties[0]._id,
+            label: `${values.signatory_title || "Party"} Email Address`,
+            tooltip_label: "",
+          },
+    };
+    setEmailModes((prev) => ({ ...prev, [partyId]: false }));
+    setEditValues((prev) => ({ ...prev, [partyId]: nextValues }));
+    // Keep incomplete choices in metadata so save validation catches them.
+    onPartiesChange(
+      orderedParties.map((party) =>
+        party._id === partyId ? { ...party, ...nextValues, order: party.order } : party
+      )
+    );
+    validateForm(partyId, { values: nextValues, isEmail: false });
+  };
+
   const handleDeleteParty = (id: string) => {
     const partyToDelete = orderedParties.find((p) => p._id === id);
     if (partyToDelete?.order === 1) return;
@@ -242,7 +307,14 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
   };
 
   const handleAddParty = () => {
-    const newCounter = partyCounter + 1;
+    const newCounter =
+      Math.max(
+        partyCounter,
+        ...orderedParties.map((party) => {
+          const match = /^party-(\d+)$/.exec(party._id);
+          return match ? Number(match[1]) : 0;
+        })
+      ) + 1;
     const partyId = `party-${newCounter}`;
     const newParty: IFormSigningParty = {
       _id: partyId,
@@ -331,6 +403,7 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
                 (p) => p._id === values.signatory_source?._id
               );
               const partyColor = getPartyColorByOrder(party.order || 1);
+              const emailOptions = values.signatory_email_options;
 
               return (
                 <Card
@@ -416,7 +489,10 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
                             if (openDropdownId === party._id) {
                               autoSaveParty(party._id, {
                                 values: editValues[party._id] ?? values,
-                                isEmail: resolveIsEmailMode(party._id, editValues[party._id] ?? values),
+                                isEmail: resolveIsEmailMode(
+                                  party._id,
+                                  editValues[party._id] ?? values
+                                ),
                               });
                               setOpenDropdownId(null);
                               return;
@@ -431,7 +507,9 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
                           type="button"
                         >
                           <span className="truncate text-slate-700">
-                            {isEmail ? (
+                            {emailOptions !== undefined ? (
+                              `Email dropdown (${emailOptions.length}) · ${sourceParty?.signatory_title || "Select source"}`
+                            ) : isEmail ? (
                               values.signatory_account?.email || "Direct email"
                             ) : sourceParty ? (
                               <span
@@ -451,9 +529,35 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
 
                         {openDropdownId === party._id && (
                           <div className="absolute right-0 left-0 z-20 mt-1 rounded-[0.33em] border border-slate-300 bg-white p-2 shadow-lg">
+                            <label className="mb-2 flex items-center gap-2 text-sm text-slate-700">
+                              <input
+                                type="checkbox"
+                                checked={emailOptions !== undefined}
+                                onChange={(event) => {
+                                  updateEmailOptions(
+                                    party._id,
+                                    values,
+                                    event.target.checked
+                                      ? values.signatory_account?.email
+                                        ? [values.signatory_account.email]
+                                        : [""]
+                                      : undefined
+                                  );
+                                  setOpenDropdownId(null);
+                                }}
+                              />
+                              Email dropdown
+                            </label>
+                            <p className="mb-1 text-xs text-slate-600">
+                              Who supplies or selects this email?
+                            </p>
                             <div className="max-h-36 space-y-1 overflow-auto pr-0.5">
                               {orderedParties
-                                .filter((p) => p._id !== party._id)
+                                .filter((p) =>
+                                  emailOptions !== undefined
+                                    ? p.order < party.order
+                                    : p._id !== party._id
+                                )
                                 .map((p) => (
                                   <button
                                     key={p._id}
@@ -478,14 +582,14 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
                                         ...prev,
                                         [party._id]: { ...partyErrors, source: undefined },
                                       }));
-                                      setTimeout(
-                                        () =>
-                                          autoSaveParty(party._id, {
-                                            values: nextValues,
-                                            isEmail: false,
-                                          }),
-                                        100
-                                      );
+                                      if (emailOptions !== undefined) {
+                                        updateEmailOptions(party._id, nextValues, emailOptions);
+                                      } else {
+                                        autoSaveParty(party._id, {
+                                          values: nextValues,
+                                          isEmail: false,
+                                        });
+                                      }
                                     }}
                                     className="w-full rounded-[0.33em] px-2 py-1.5 text-left text-sm text-slate-700 hover:bg-slate-100"
                                   >
@@ -501,50 +605,133 @@ export const PartiesPanel = ({ parties, onPartiesChange }: PartiesPanelProps) =>
                                 ))}
                             </div>
 
-                            <div className="mt-2 border-t border-slate-200 pt-2">
-                              <p className="mb-1 text-xs text-slate-600">
-                                or enter an email address
-                              </p>
-                              <input
-                                type="email"
-                                value={isEmail ? values.signatory_account?.email || "" : ""}
-                                onChange={(e) => {
-                                  const email = e.target.value;
-                                  const nextValues: Partial<IFormSigningParty> = {
-                                    ...values,
-                                    signatory_source: undefined,
-                                    signatory_account: {
-                                      name: email.split("@")[0] || "",
-                                      email,
-                                    },
-                                  };
-                                  setEmailModes({ ...emailModes, [party._id]: true });
-                                  setEditValues({
-                                    ...editValues,
-                                    [party._id]: nextValues,
-                                  });
-                                  setValidationErrors((prev) => ({
-                                    ...prev,
-                                    [party._id]: { ...partyErrors, source: undefined },
-                                  }));
-                                }}
-                                onBlur={(e) => {
-                                  autoSaveParty(party._id, {
-                                    values: {
+                            {emailOptions === undefined && (
+                              <div className="mt-2 border-t border-slate-200 pt-2">
+                                <p className="mb-1 text-xs text-slate-600">
+                                  or enter an email address
+                                </p>
+                                <input
+                                  type="email"
+                                  value={isEmail ? values.signatory_account?.email || "" : ""}
+                                  onChange={(e) => {
+                                    const email = e.target.value;
+                                    const nextValues: Partial<IFormSigningParty> = {
                                       ...values,
                                       signatory_source: undefined,
+                                      signatory_email_options: undefined,
                                       signatory_account: {
-                                        name: e.target.value.split("@")[0] || "",
-                                        email: e.target.value,
+                                        name: email.split("@")[0] || "",
+                                        email,
                                       },
-                                    },
-                                    isEmail: true,
-                                  });
-                                }}
-                                placeholder="email@example.com"
-                                className="h-8 w-full rounded-[0.33em] border border-slate-300 px-2 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
-                              />
-                            </div>
+                                    };
+                                    setEmailModes({ ...emailModes, [party._id]: true });
+                                    setEditValues({
+                                      ...editValues,
+                                      [party._id]: nextValues,
+                                    });
+                                    setValidationErrors((prev) => ({
+                                      ...prev,
+                                      [party._id]: { ...partyErrors, source: undefined },
+                                    }));
+                                  }}
+                                  onBlur={(e) => {
+                                    autoSaveParty(party._id, {
+                                      values: {
+                                        ...values,
+                                        signatory_source: undefined,
+                                        signatory_email_options: undefined,
+                                        signatory_account: {
+                                          name: e.target.value.split("@")[0] || "",
+                                          email: e.target.value,
+                                        },
+                                      },
+                                      isEmail: true,
+                                    });
+                                  }}
+                                  placeholder="email@example.com"
+                                  className="h-8 w-full rounded-[0.33em] border border-slate-300 px-2 text-sm focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-none"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {emailOptions !== undefined && (
+                          <div className="mt-2 space-y-2">
+                            <p className="text-xs text-slate-600">
+                              Allowed emails (selection required)
+                            </p>
+                            {emailOptions.map((email, optionIndex) => (
+                              <div key={optionIndex} className="flex items-center gap-1">
+                                <input
+                                  type="email"
+                                  aria-label={`Email choice ${optionIndex + 1} for ${values.signatory_title}`}
+                                  value={email}
+                                  placeholder="email@example.com"
+                                  className="h-8 min-w-0 flex-1 rounded-[0.33em] border border-slate-300 px-2 text-sm"
+                                  onChange={(event) =>
+                                    updateEmailOptions(
+                                      party._id,
+                                      values,
+                                      emailOptions.map((value, i) =>
+                                        i === optionIndex ? event.target.value : value
+                                      )
+                                    )
+                                  }
+                                />
+                                {(
+                                  [
+                                    [-1, ArrowUp, "Move up"],
+                                    [1, ArrowDown, "Move down"],
+                                  ] as const
+                                ).map(([direction, Icon, label]) => (
+                                  <button
+                                    key={direction}
+                                    type="button"
+                                    aria-label={`${label} email choice ${optionIndex + 1}`}
+                                    disabled={
+                                      optionIndex + direction < 0 ||
+                                      optionIndex + direction >= emailOptions.length
+                                    }
+                                    className="p-1 text-slate-500 disabled:opacity-30"
+                                    onClick={() => {
+                                      const next = [...emailOptions];
+                                      [next[optionIndex], next[optionIndex + direction]] = [
+                                        next[optionIndex + direction],
+                                        next[optionIndex],
+                                      ];
+                                      updateEmailOptions(party._id, values, next);
+                                    }}
+                                  >
+                                    <Icon className="h-3.5 w-3.5" />
+                                  </button>
+                                ))}
+                                <button
+                                  type="button"
+                                  aria-label={`Remove email choice ${optionIndex + 1}`}
+                                  className="p-1 text-red-500"
+                                  onClick={() =>
+                                    updateEmailOptions(
+                                      party._id,
+                                      values,
+                                      emailOptions.filter((_, i) => i !== optionIndex)
+                                    )
+                                  }
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                updateEmailOptions(party._id, values, [...emailOptions, ""])
+                              }
+                            >
+                              <Plus className="h-3.5 w-3.5" /> Add email
+                            </Button>
                           </div>
                         )}
 

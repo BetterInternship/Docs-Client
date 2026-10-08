@@ -41,6 +41,7 @@ import { StaticFormRendererContextProvider } from "@/components/docs/forms/form-
 import { FormFillerContextProvider, useFormFiller } from "@/components/docs/forms/form-filler.ctx";
 import { useSignedUrl } from "@/lib/signed-url";
 import { expandRepeatedPreviewBlocks } from "@/lib/repeated-pdf-fields";
+import { RecipientDropdownPreview } from "./RecipientDropdownPreview";
 
 interface FormPreviewProps {
   metadata?: IFormMetadata;
@@ -119,6 +120,7 @@ const FormPreviewFormPanel = ({
   isGenerating,
   onGenerate,
   selectedPartyId,
+  signingParties,
 }: {
   autoScrollToSelectedField: boolean;
   onFieldClick: (fieldId: string) => void;
@@ -126,11 +128,15 @@ const FormPreviewFormPanel = ({
   isGenerating: boolean;
   onGenerate: () => void;
   selectedPartyId: string;
+  signingParties: IFormSigningParty[];
 }) => {
   const editing = useFormPreviewEditing();
 
   return (
     <div className="flex h-full min-w-0 flex-col overflow-hidden bg-white">
+      <div className="max-h-60 shrink-0 overflow-auto">
+        <RecipientDropdownPreview parties={signingParties} sourcePartyId={selectedPartyId} />
+      </div>
       <div className="min-h-0 flex-1 overflow-hidden">
         <FormPreviewRenderer
           autoScrollToSelectedField={autoScrollToSelectedField}
@@ -288,6 +294,7 @@ const FormPreviewContentBody = ({
           isGenerating={isGenerating}
           onGenerate={handleGenerateTestForm}
           selectedPartyId={selectedPartyId}
+          signingParties={signingParties}
         />
       }
       right={

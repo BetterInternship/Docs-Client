@@ -59,7 +59,22 @@ export const SpecifySigningPartiesModal = ({
     };
 
     // Try to validate the emails
-    const errors = formFiller.validate([...fields, ...signingPartyFields], additionalValues);
+    const dropdownFields = signingPartyFields.filter((field) => field.type === "dropdown");
+    const errors = formFiller.validate(
+      [...fields, ...signingPartyFields.filter((field) => field.type !== "dropdown")],
+      additionalValues
+    );
+    // A dropdown requires a choice made in this modal, never a cached email.
+    const selectedDropdownValues: FormValues = {};
+    for (const field of dropdownFields) {
+      const value = signingPartyValues[field.field] ?? "";
+      const result = field.validator?.safeParse(field.coerce(value));
+      if (!result?.success) {
+        errors[field.field] = `${field.label}: select a configured recipient email.`;
+      } else {
+        selectedDropdownValues[field.field] = String(result.data);
+      }
+    }
     setErrors(errors);
 
     if (Object.keys(errors).length) {
@@ -69,12 +84,16 @@ export const SpecifySigningPartiesModal = ({
 
     try {
       // Submit and close modal if okay
-      const finalValues = formFiller.getFinalValues(additionalValues);
+      const finalValues = {
+        ...formFiller.getFinalValues(additionalValues),
+        ...selectedDropdownValues,
+      };
       await handleSubmit(finalValues, settings);
       if (settings.autofill) await handleUpdateAutofill(finalValues);
     } catch (err) {
       alert(err);
       setBusy(false);
+      return;
     }
 
     close();
@@ -84,8 +103,8 @@ export const SpecifySigningPartiesModal = ({
   return (
     <div className="flex max-w-prose min-w-[100%] flex-col space-y-2">
       <div className="text-justify text-sm leading-relaxed">
-        This form requires signatures from other parties. Enter their emails so we can send the
-        form. If you’re also one of the signatories below, you may enter your email again.
+        This form requires signatures from other parties. Enter or select their emails so we can
+        send the form. If you’re also one of the signatories below, you may enter your email again.
       </div>
 
       {signingPartyBlocks.map((block) => {
@@ -93,6 +112,7 @@ export const SpecifySigningPartiesModal = ({
         if (!field) return <></>;
         return (
           <FieldRenderer
+            key={field.field}
             field={field}
             value={signingPartyValues[field.field]}
             error={errors[field.field]}
