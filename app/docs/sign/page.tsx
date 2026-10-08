@@ -261,10 +261,13 @@ function PageContent() {
   const mySigningParty = templateSigningParties.find(
     (signingParty) => signingParty._id === formProcess.my_signing_party_id
   );
+  const forwardOnly = formProcess.can_sign === false;
   const shouldShowSignIntentGate =
-    typeof mySigningParty?.signatory_source?._id === "string" &&
-    mySigningParty.signatory_source._id.trim().length > 0;
-  const currentView = shouldShowSignIntentGate ? view : "form";
+    forwardOnly ||
+    (typeof mySigningParty?.signatory_source?._id === "string" &&
+      mySigningParty.signatory_source._id.trim().length > 0);
+  const currentView =
+    forwardOnly && view === "form" ? "choice" : shouldShowSignIntentGate ? view : "form";
   const renderSigningProgressButton = () => (
     <Button
       type="button"
@@ -469,7 +472,10 @@ function PageContent() {
               exit={{ opacity: 0, y: -32, transition: choiceExitTransition }}
             >
               <SignIntentGate
-                onSignSelf={() => setView("form")}
+                forwardOnly={forwardOnly}
+                onSignSelf={() => {
+                  if (!forwardOnly) setView("form");
+                }}
                 onDelegate={() => setView("delegate")}
               />
             </motion.div>

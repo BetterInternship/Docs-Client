@@ -19,6 +19,9 @@ const sanitizeMetadata = (metadata: IFormMetadata): IFormMetadata => ({
   },
   signing_parties: metadata.signing_parties || [],
   subscribers: metadata.subscribers || [],
+  ...(metadata.prevent_repeat_signing === undefined
+    ? {}
+    : { prevent_repeat_signing: metadata.prevent_repeat_signing }),
 });
 
 export function FormMetadataTab() {

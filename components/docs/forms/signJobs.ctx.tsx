@@ -188,6 +188,9 @@ export const SignJobsProvider = ({
       }
 
       if (entry.isFailed) {
+        const tracked = jobs.find((job) => job.jobId === entry.jobId);
+        if (tracked)
+          void queryClient.invalidateQueries({ queryKey: ["form-process", tracked.formProcessId] });
         // S10: nothing was optimistically mutated, so untracking alone
         // returns the row to its normal (unsigned) rendering.
         untrack(entry.jobId);

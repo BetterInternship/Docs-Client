@@ -41,7 +41,10 @@ function useFormActionController() {
 
   const handleSubmit = async () => {
     setBusy(true);
-    if (!profile.id) return;
+    if (!profile.id) {
+      setBusy(false);
+      return;
+    }
 
     const finalValues = formFiller.getFinalValues(autofillValues);
 
@@ -67,7 +70,7 @@ function useFormActionController() {
               ...finalValuesWithSignatures,
               ...signingPartyValues,
             });
-            const response = await formsControllerContinueFormProcess({
+            const response = await continueProcess({
               formProcessId: formProcess.id,
               supposedSigningPartyId: formProcess.my_signing_party_id!,
               values: valuesWithSignatures,
@@ -90,7 +93,7 @@ function useFormActionController() {
           form.formMetadata.getSigningParties()
         );
       } else {
-        const response = await formsControllerContinueFormProcess({
+        const response = await continueProcess({
           formProcessId: formProcess.id,
           supposedSigningPartyId: formProcess.my_signing_party_id!,
           values: finalValuesWithSignatures,
@@ -106,8 +109,27 @@ function useFormActionController() {
       }
     } catch (error) {
       console.error("Submission error", error);
+      toast.error(
+        error instanceof Error ? error.message : "Unable to submit this step.",
+        toastPresets.destructive
+      );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const continueProcess = async (
+    body: Parameters<typeof formsControllerContinueFormProcess>[0]
+  ) => {
+    try {
+      return await formsControllerContinueFormProcess(body);
+    } catch (error) {
+      try {
+        await formProcess.refresh();
+      } catch (refreshError) {
+        console.warn("Unable to refresh form permissions:", refreshError);
+      }
+      throw error;
     }
   };
 
@@ -117,7 +139,7 @@ function useFormActionController() {
 
   return {
     busy,
-    canSubmit: signContext.hasAgreed,
+    canSubmit: signContext.hasAgreed && formProcess.can_sign !== false,
     handleReject,
     handleSubmit,
   };

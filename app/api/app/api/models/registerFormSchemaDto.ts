@@ -10,6 +10,7 @@ import type { FormSigningParty } from "./formSigningParty";
 import type { FormSubscriber } from "./formSubscriber";
 
 export interface RegisterFormSchemaDto {
+  prevent_repeat_signing?: boolean;
   name: string;
   label: string;
   schema_version: number;
