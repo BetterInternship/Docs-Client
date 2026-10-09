@@ -20,6 +20,7 @@ import {
 } from "@/app/api";
 import { normalizeBlocksForSave } from "@/lib/form-schema-normalizer";
 import { applySaveRules } from "@/lib/form-save-rules";
+import { getRecipientEmailOptions } from "@betterinternship/core/forms";
 import {
   computeDelta,
   applyDelta,
@@ -336,6 +337,19 @@ export function FormEditorMetadataProvider({
     setIsSaving(true);
     try {
       const normalizedMetadata = normalizeMetadataForSave(applySaveRules(state.present));
+      normalizedMetadata.signing_parties = normalizedMetadata.signing_parties.map((party) => {
+        const options = getRecipientEmailOptions(party);
+        if (options === undefined) return party;
+        const source = normalizedMetadata.signing_parties.find(
+          (candidate) => candidate._id === party.signatory_source?._id
+        );
+        if (!source || source.order >= party.order || party.signatory_account) {
+          throw new Error(
+            `${party.signatory_title}: choose an earlier signing party to select the email dropdown.`
+          );
+        }
+        return { ...party, signatory_email_options: options };
+      });
       const payload: RegisterFormSchemaDto = {
         ...(normalizedMetadata as unknown as RegisterFormSchemaDto),
         base_document: documentFile ?? undefined,
@@ -352,7 +366,10 @@ export function FormEditorMetadataProvider({
       toast.success("Form saved successfully!", toastPresets.success);
     } catch (error) {
       console.error("Save error:", error);
-      toast.error("Failed to save form", toastPresets.destructive);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save form",
+        toastPresets.destructive
+      );
       throw error;
     } finally {
       setIsSaving(false);

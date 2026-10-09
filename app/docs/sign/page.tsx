@@ -48,8 +48,8 @@ const areFormValuesEqual = (left: Record<string, string>, right: Record<string, 
   return leftEntries.every(([key, value]) => right[key] === value);
 };
 
-const getCanonicalSignatureFields = (
-  signatureFields: (ClientField<any[]> | ClientPhantomField<any[]>)[]
+const getCanonicalSignatureFields = <T extends any[]>(
+  signatureFields: (ClientField<T> | ClientPhantomField<T>)[]
 ) => {
   const seenRecipientIds = new Set<string>();
   return signatureFields.filter((signatureField) => {
@@ -72,7 +72,7 @@ function PageContent() {
   const [view, setView] = useState<"choice" | "form" | "delegate">("choice");
   const [mobileStep, setMobileStep] = useState<MobileSigningStep>("fields");
   const [desktopStep, setDesktopStep] = useState<MobileSigningStep>("fields");
-  const [mobileFieldsTab, setMobileFieldsTab] = useState<"template" | "preview">("form");
+  const [mobileFieldsTab, setMobileFieldsTab] = useState<"form" | "preview">("form");
   const [mobilePreviewNeedsAttention, setMobilePreviewNeedsAttention] = useState(false);
   const [selectedFieldSource, setSelectedFieldSource] = useState<"form" | "pdf">("form");
   const [selectionTick, setSelectionTick] = useState(0);
@@ -160,16 +160,17 @@ function PageContent() {
   }, [formProcess.id, profile.id]);
 
   useEffect(() => {
-    if (!formProcess.my_signing_party_id || !form.formName) return;
+    const mySigningPartyId = formProcess.my_signing_party_id;
+    if (!mySigningPartyId || !form.formName) return;
 
     const initForm = async () => {
       const signatureFields = form.formMetadata.getSignatureFieldsForClientService(
-        formProcess.my_signing_party_id
+        mySigningPartyId
       );
       const valuesWithPrefilledSignatures = form.formMetadata.setSignatureValueForSigningParty(
         formFiller.getFinalValues(autofillValues),
         profile.name,
-        formProcess.my_signing_party_id
+        mySigningPartyId
       );
       const signatureImagePreference = autofillValues.__signature_image_enabled;
 
@@ -260,10 +261,13 @@ function PageContent() {
   const mySigningParty = templateSigningParties.find(
     (signingParty) => signingParty._id === formProcess.my_signing_party_id
   );
+  const forwardOnly = formProcess.can_sign === false;
   const shouldShowSignIntentGate =
-    typeof mySigningParty?.signatory_source?._id === "string" &&
-    mySigningParty.signatory_source._id.trim().length > 0;
-  const currentView = shouldShowSignIntentGate ? view : "form";
+    forwardOnly ||
+    (typeof mySigningParty?.signatory_source?._id === "string" &&
+      mySigningParty.signatory_source._id.trim().length > 0);
+  const currentView =
+    forwardOnly && view === "form" ? "choice" : shouldShowSignIntentGate ? view : "form";
   const renderSigningProgressButton = () => (
     <Button
       type="button"
@@ -342,7 +346,7 @@ function PageContent() {
     setMobileStep(nextStep);
   };
 
-  const handleMobileFieldsTabChange = useCallback((nextTab: "template" | "preview") => {
+  const handleMobileFieldsTabChange = useCallback((nextTab: "form" | "preview") => {
     setMobileFieldsTab(nextTab);
 
     if (nextTab === "preview") {
@@ -354,7 +358,7 @@ function PageContent() {
     setSelectedFieldSource("pdf");
     setSelectionTick((prev) => prev + 1);
     form.setSelectedPreviewId(fieldName);
-    handleMobileFieldsTabChange("template");
+    handleMobileFieldsTabChange("form");
   };
 
   const handleFormFieldSelect = (fieldName: string) => {
@@ -384,7 +388,7 @@ function PageContent() {
       <MobileStepTabs
         tabs={mobileFieldsTabs}
         activeTab={mobileFieldsTab}
-        onTabChange={(tabId) => handleMobileFieldsTabChange(tabId as "template" | "preview")}
+        onTabChange={(tabId) => handleMobileFieldsTabChange(tabId as "form" | "preview")}
       />
     ) : null;
 
@@ -468,7 +472,10 @@ function PageContent() {
               exit={{ opacity: 0, y: -32, transition: choiceExitTransition }}
             >
               <SignIntentGate
-                onSignSelf={() => setView("form")}
+                forwardOnly={forwardOnly}
+                onSignSelf={() => {
+                  if (!forwardOnly) setView("form");
+                }}
                 onDelegate={() => setView("delegate")}
               />
             </motion.div>
@@ -495,7 +502,7 @@ function PageContent() {
                   <div className="border-b border-gray-300 bg-white">
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5 sm:px-4">
                       <div className="flex min-w-0 flex-1 items-center gap-2">
-                        {shouldShowSignIntentGate && currentView !== "choice" && (
+                        {shouldShowSignIntentGate && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -678,7 +685,7 @@ function PageContent() {
                               variant="outline"
                               className="h-11 w-11 shrink-0"
                               onClick={() => {
-                                handleMobileFieldsTabChange("template");
+                                handleMobileFieldsTabChange("form");
                                 goToMobileStep("fields");
                               }}
                               aria-label="Back to form fields"

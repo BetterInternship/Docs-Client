@@ -308,6 +308,7 @@ export function AutocompleteTreeMulti({
   className,
   label,
   tooltip,
+  labelAddon,
 }: {
   required?: boolean;
   tree: TreeOption[];
@@ -317,6 +318,7 @@ export function AutocompleteTreeMulti({
   className?: string;
   label?: React.ReactNode;
   tooltip?: string;
+  labelAddon?: React.ReactNode;
 }) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -425,7 +427,14 @@ export function AutocompleteTreeMulti({
 
   return (
     <div className={cn("relative w-full overflow-visible", className)} ref={ref}>
-      {label ? <LabelWithTooltip label={label} required={required} tooltip={tooltip} /> : null}
+      {label ? (
+        <LabelWithTooltip
+          label={label}
+          required={required}
+          tooltip={tooltip}
+          labelAddon={labelAddon}
+        />
+      ) : null}
 
       {/* input + chips (same look/feel as AutocompleteMulti) */}
       <div

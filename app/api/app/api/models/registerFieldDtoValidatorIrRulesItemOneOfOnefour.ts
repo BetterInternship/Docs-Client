@@ -9,6 +9,6 @@ import type { RegisterFieldDtoValidatorIrRulesItemOneOfOnefourKind } from "./reg
 
 export type RegisterFieldDtoValidatorIrRulesItemOneOfOnefour = {
   kind: RegisterFieldDtoValidatorIrRulesItemOneOfOnefourKind;
-  field: string;
+  businessDays: number;
   message?: string;
 };

@@ -11,7 +11,7 @@ export type FormItem = {
   label: string;
   enabledAutosign: boolean;
   party: string;
-  date: string;
+  date: string | number;
 };
 
 export default function MyFormRow({

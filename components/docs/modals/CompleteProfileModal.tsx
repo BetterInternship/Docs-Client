@@ -31,7 +31,7 @@ export function CompleteProfileModal({
       setIsLoading(true);
       await signatoryControllerUpdateSelf({ name: name.trim() });
       await queryClient.refetchQueries({ queryKey: ["my-profile"] });
-      toast.success("Profile updated!", toastPresets.default);
+      toast.success("Profile updated!", toastPresets.success);
       
       close();
       if (onSuccess) {

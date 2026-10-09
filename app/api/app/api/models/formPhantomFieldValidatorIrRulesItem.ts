@@ -12,6 +12,7 @@ import type { FormPhantomFieldValidatorIrRulesItemOneOfEight } from "./formPhant
 import type { FormPhantomFieldValidatorIrRulesItemOneOfOnezero } from "./formPhantomFieldValidatorIrRulesItemOneOfOnezero";
 import type { FormPhantomFieldValidatorIrRulesItemOneOfOnetwo } from "./formPhantomFieldValidatorIrRulesItemOneOfOnetwo";
 import type { FormPhantomFieldValidatorIrRulesItemOneOfOnefour } from "./formPhantomFieldValidatorIrRulesItemOneOfOnefour";
+import type { FormPhantomFieldValidatorIrRulesItemOneOfOnesix } from "./formPhantomFieldValidatorIrRulesItemOneOfOnesix";
 
 export type FormPhantomFieldValidatorIrRulesItem =
   | FormPhantomFieldValidatorIrRulesItemOneOf
@@ -20,4 +21,5 @@ export type FormPhantomFieldValidatorIrRulesItem =
   | FormPhantomFieldValidatorIrRulesItemOneOfEight
   | FormPhantomFieldValidatorIrRulesItemOneOfOnezero
   | FormPhantomFieldValidatorIrRulesItemOneOfOnetwo
-  | FormPhantomFieldValidatorIrRulesItemOneOfOnefour;
+  | FormPhantomFieldValidatorIrRulesItemOneOfOnefour
+  | FormPhantomFieldValidatorIrRulesItemOneOfOnesix;

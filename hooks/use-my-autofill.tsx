@@ -112,10 +112,10 @@ export const useMyAutofillUpdate = () => {
  * @param autofillValues - Current autofill values object
  * @returns Array of fields that are required but missing from autofill
  */
-export const getMissingManualFields = (
-  requiredFields: IFormField[],
+export const getMissingManualFields = <T extends Pick<IFormField, "field" | "source">>(
+  requiredFields: T[],
   autofillValues: Record<string, any>
-): IFormField[] => {
+): T[] => {
   return requiredFields.filter((field) => {
     // Only check fields with source='manual', ignore auto/prefill/derived
     if (field.source === "manual" && !autofillValues[field.field]) {

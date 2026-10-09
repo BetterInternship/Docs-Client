@@ -12,6 +12,7 @@ import type { RegisterFieldDtoValidatorIrRulesItemOneOfEight } from "./registerF
 import type { RegisterFieldDtoValidatorIrRulesItemOneOfOnezero } from "./registerFieldDtoValidatorIrRulesItemOneOfOnezero";
 import type { RegisterFieldDtoValidatorIrRulesItemOneOfOnetwo } from "./registerFieldDtoValidatorIrRulesItemOneOfOnetwo";
 import type { RegisterFieldDtoValidatorIrRulesItemOneOfOnefour } from "./registerFieldDtoValidatorIrRulesItemOneOfOnefour";
+import type { RegisterFieldDtoValidatorIrRulesItemOneOfOnesix } from "./registerFieldDtoValidatorIrRulesItemOneOfOnesix";
 
 export type RegisterFieldDtoValidatorIrRulesItem =
   | RegisterFieldDtoValidatorIrRulesItemOneOf
@@ -20,4 +21,5 @@ export type RegisterFieldDtoValidatorIrRulesItem =
   | RegisterFieldDtoValidatorIrRulesItemOneOfEight
   | RegisterFieldDtoValidatorIrRulesItemOneOfOnezero
   | RegisterFieldDtoValidatorIrRulesItemOneOfOnetwo
-  | RegisterFieldDtoValidatorIrRulesItemOneOfOnefour;
+  | RegisterFieldDtoValidatorIrRulesItemOneOfOnefour
+  | RegisterFieldDtoValidatorIrRulesItemOneOfOnesix;

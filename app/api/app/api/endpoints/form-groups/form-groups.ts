@@ -31,6 +31,7 @@ import type {
   ErrorResponse,
   FormGroupIdDto,
   RemoveFormFromGroupDto,
+  ResetFormGroupCodeResponse,
 } from "../../models";
 
 import { preconfiguredAxiosFunction } from "../../../../preconfig.axios";
@@ -679,7 +680,7 @@ export const formGroupsControllerResetOwnFormGroupCode = (
   formGroupIdDto: FormGroupIdDto,
   signal?: AbortSignal
 ) => {
-  return preconfiguredAxiosFunction<BaseResponse>({
+  return preconfiguredAxiosFunction<ResetFormGroupCodeResponse>({
     url: `/api/form-groups/me/reset-code`,
     method: "POST",
     headers: { "Content-Type": "application/json" },

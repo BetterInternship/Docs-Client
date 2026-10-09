@@ -74,24 +74,7 @@ const FormDefaultValueCaptureContent = ({
 
     const initialValues: Record<string, string> = {};
 
-    // First, add default values from metadata
-    const defaultValues = metadata?.schema?.blocks
-      ?.filter((b) => b.block_type === "form_field")
-      .reduce(
-        (acc, block) => {
-          if (block.field_schema?.default_value) {
-            acc[block.field_schema.field] = block.field_schema.default_value;
-          }
-          return acc;
-        },
-        {} as Record<string, string>
-      );
-
-    if (defaultValues) {
-      Object.assign(initialValues, defaultValues);
-    }
-
-    // Then, add values from prefiller (prefiller takes precedence)
+    // First, add values from prefiller
     Object.assign(initialValues, extractPrefillValues(fields, { trim: true }));
 
     // Finally, add autofill values (autofill takes highest precedence)
@@ -167,7 +150,10 @@ const FormDefaultValueCaptureContent = ({
                 selectedPreviewId={selectedFieldId}
                 onSelectedPreviewId={setSelectedFieldId}
               >
-                <FormPreviewRenderer onFieldClick={setSelectedFieldId} />
+                <FormPreviewRenderer
+                  onFieldClick={setSelectedFieldId}
+                  selectedPartyId={selectedPartyId}
+                />
               </StaticFormRendererContextProvider>
             ) : (
               <div className="rounded bg-slate-50 p-8 text-center">
@@ -186,7 +172,7 @@ const FormDefaultValueCaptureContent = ({
                 blocks={filteredBlocks}
                 values={previewValues}
                 onFieldClick={(fieldName) => setSelectedFieldId(fieldName)}
-                selectedFieldId={selectedFieldId}
+                selectedFieldId={selectedFieldId ?? undefined}
                 prefillMode="dummy"
                 prefillUser={DEFAULT_PREVIEW_DUMMY_STUDENT_USER}
               />

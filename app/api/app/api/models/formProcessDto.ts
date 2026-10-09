@@ -9,6 +9,7 @@ import type { FormProcessDtoDisplayInformation } from "./formProcessDtoDisplayIn
 import type { FormProcessDtoFormInputs } from "./formProcessDtoFormInputs";
 
 export interface FormProcessDto {
+  can_sign?: boolean;
   my_signing_party_id: string;
   display_information: FormProcessDtoDisplayInformation;
   form_inputs: FormProcessDtoFormInputs;

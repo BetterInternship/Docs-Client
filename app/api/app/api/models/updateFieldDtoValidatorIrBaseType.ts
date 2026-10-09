@@ -24,4 +24,5 @@ export const UpdateFieldDtoValidatorIrBaseType = {
   url: "url",
   signature: "signature",
   image: "image",
+  radio: "radio",
 } as const;

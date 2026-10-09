@@ -349,8 +349,8 @@ function getFieldDeltas(
   const deltas: FieldDelta[] = [];
   for (const key of keys) {
     if (skip.has(key)) continue;
-    const bVal = (before as Record<string, unknown>)[key];
-    const aVal = (after as Record<string, unknown>)[key];
+    const bVal = (before as unknown as Record<string, unknown>)[key];
+    const aVal = (after as unknown as Record<string, unknown>)[key];
     if (stableStringify(bVal) !== stableStringify(aVal)) {
       if (
         (key === "field_schema" || key === "phantom_field_schema") &&
@@ -407,7 +407,15 @@ export function diffFormMetadata(
     if (!pp) parties.push({ kind: "added", id, label: np!.signatory_title });
     else if (!np) parties.push({ kind: "removed", id, label: pp.signatory_title });
     else if (stableStringify(pp) !== stableStringify(np))
-      parties.push({ kind: "modified", id, label: np.signatory_title });
+      parties.push({
+        kind: "modified",
+        id,
+        label:
+          stableStringify(pp.signatory_email_options) !==
+          stableStringify(np.signatory_email_options)
+            ? `${np.signatory_title} — email choices updated`
+            : np.signatory_title,
+      });
   }
 
   // Subscribers

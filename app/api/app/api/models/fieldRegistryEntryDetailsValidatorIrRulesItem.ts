@@ -12,6 +12,7 @@ import type { FieldRegistryEntryDetailsValidatorIrRulesItemOneOfEight } from "./
 import type { FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnezero } from "./fieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnezero";
 import type { FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnetwo } from "./fieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnetwo";
 import type { FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnefour } from "./fieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnefour";
+import type { FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnesix } from "./fieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnesix";
 
 export type FieldRegistryEntryDetailsValidatorIrRulesItem =
   | FieldRegistryEntryDetailsValidatorIrRulesItemOneOf
@@ -20,4 +21,5 @@ export type FieldRegistryEntryDetailsValidatorIrRulesItem =
   | FieldRegistryEntryDetailsValidatorIrRulesItemOneOfEight
   | FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnezero
   | FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnetwo
-  | FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnefour;
+  | FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnefour
+  | FieldRegistryEntryDetailsValidatorIrRulesItemOneOfOnesix;

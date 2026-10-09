@@ -24,4 +24,5 @@ export const RegisterFieldDtoValidatorIrBaseType = {
   url: "url",
   signature: "signature",
   image: "image",
+  radio: "radio",
 } as const;

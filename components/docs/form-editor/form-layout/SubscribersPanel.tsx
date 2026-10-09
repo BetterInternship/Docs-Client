@@ -31,7 +31,7 @@ export const SubscribersPanel = ({ subscribers, onSubscribersChange }: Subscribe
     if (!validation.valid) {
       const errorMessage = validation.error || "Invalid email";
       setEmailErrors((prev) => ({ ...prev, [index]: errorMessage }));
-      toast.error(errorMessage, toastPresets.error);
+      toast.error(errorMessage, toastPresets.destructive);
       return;
     }
     setEmailErrors((prev) => ({ ...prev, [index]: null }));

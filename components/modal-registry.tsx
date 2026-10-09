@@ -12,11 +12,9 @@ import { FormContinuationSuccessModal } from "./modals/FormContinuationSuccessMo
 import { FormRejectionPromptModal } from "./modals/FormRejectionPromptModal";
 import { CompleteProfileModal } from "./docs/modals/CompleteProfileModal";
 import { ISignatoryFormSettings } from "@/app/docs/auth/provider/form-settings.ctx";
-import { SetupFormSettings } from "./modals/SetupFormSettings";
 import { CancelledFormDetailsModal } from "./modals/CancelledFormDetailsModal";
 import { SigningMapModal } from "./modals/SigningMapModal";
 import { SigningPartyMapParty } from "./docs/forms/SignignPartyTimeline";
-import { DuplicateSignatoryWarningModal } from "./modals/DuplicateSignatoryWarningModal";
 
 /**
  * Simplifies modal config since we usually reuse each of these modal stuffs.
@@ -27,37 +25,6 @@ export const useModalRegistry = () => {
   const { openModal: open, closeModal: close } = useModal();
 
   const modalRegistry = {
-    formSettingsSetup: {
-      open: (
-        fields: (ClientField<[any]> | ClientPhantomField<[any]>)[],
-        formFiller: IFormFiller,
-        handleSubmit: (finalValues: FormValues, settings: ISignatoryFormSettings) => Promise<any>,
-        handleUpdateAutofill: (finalValues: FormValues) => Promise<any>,
-        formSettings: ISignatoryFormSettings,
-        autofillValues?: FormValues
-      ) =>
-        open(
-          "form-settings-setup",
-          <SetupFormSettings
-            fields={fields}
-            formFiller={formFiller}
-            formSettings={formSettings}
-            autofillValues={autofillValues}
-            handleSubmit={handleSubmit}
-            handleUpdateAutofill={handleUpdateAutofill}
-            close={() => close("form-settings-setup")}
-          />,
-          {
-            title: <div className="px-5 py-1 text-3xl font-bold tracking-tight">Submit Form</div>,
-            closeOnEsc: false,
-            allowBackdropClick: false,
-            hasClose: false,
-            showHeaderDivider: true,
-          }
-        ),
-      close: () => close("form-settings-setup"),
-    },
-
     // Email confirmation modal
     specifySigningParties: {
       open: (
@@ -140,27 +107,6 @@ export const useModalRegistry = () => {
           }
         ),
       close: () => close("signing-map"),
-    },
-
-    duplicateSignatoryWarning: {
-      open: (previousRoles: string[], currentRole: string, onConfirm: () => void) =>
-        open(
-          "duplicate-signatory-warning",
-          <DuplicateSignatoryWarningModal
-            previousRoles={previousRoles}
-            currentRole={currentRole}
-            onCancel={() => close("duplicate-signatory-warning")}
-            onConfirm={() => {
-              close("duplicate-signatory-warning");
-              onConfirm();
-            }}
-          />,
-          {
-            panelClassName: "sm:w-full sm:max-w-xl",
-            hasClose: false,
-          }
-        ),
-      close: () => close("duplicate-signatory-warning"),
     },
 
     // Complete profile modal

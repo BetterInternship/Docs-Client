@@ -13,7 +13,7 @@ export default function LinkLoginPage() {
   );
 }
 
-export function LinkLogin() {
+function LinkLogin() {
   const search = useSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();

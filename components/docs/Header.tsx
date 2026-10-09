@@ -64,7 +64,7 @@ export default function DocsTopbarUser() {
           <Loader2 className="h-5 w-5 animate-spin" />
           <span>Signing out...</span>
         </div>,
-        { ...toastPresets.loading, duration: Infinity }
+        { ...toastPresets.neutral, duration: Infinity }
       );
 
       // Clear cached auth-dependent data immediately, then refetch profile.

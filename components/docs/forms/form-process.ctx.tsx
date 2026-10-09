@@ -16,6 +16,8 @@ export interface IFormProcess {
   timestamp?: string;
   my_signing_party_id?: string;
   signing_parties?: SigningPartyMapParty[];
+  can_sign?: boolean;
+  refresh: () => Promise<Partial<IFormProcess> | undefined>;
 
   setSupposedSigningPartyId: (supposedSigningPartyId: string) => void;
   setFormProcessId: (formProcessId: string) => void;
@@ -29,7 +31,7 @@ export const useFormProcess = () => useContext(FormProcessContext);
 export const FormProcessContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [formProcessId, setFormProcessId] = useState("");
   const [supposedSigningPartyId, setSupposedSigningPartyId] = useState("");
-  const { data: _formProcess } = useQuery({
+  const { data: _formProcess, refetch } = useQuery({
     queryKey: ["form-process", formProcessId, supposedSigningPartyId],
     queryFn: useCallback(
       () =>
@@ -56,6 +58,10 @@ export const FormProcessContextProvider = ({ children }: { children: React.React
         form_inputs: formProcess?.form_inputs as Record<string, string> | undefined,
         setFormProcessId,
         setSupposedSigningPartyId,
+        refresh: async () => {
+          const result = await refetch();
+          return result.data?.formProcess as unknown as Partial<IFormProcess> | undefined;
+        },
         error: _formProcess?.message,
       }}
     >

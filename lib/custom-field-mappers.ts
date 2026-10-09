@@ -1,5 +1,6 @@
 import type { ValidatorIRv0 } from "@/lib/validator-ir";
 import type { FieldSchemaDefaults } from "@/lib/field-schema-defaults";
+import type { RegisterFieldDto } from "@/app/api";
 
 export const FIELD_SOURCES = ["auto", "prefill", "derived", "manual"] as const;
 export type FieldSource = (typeof FIELD_SOURCES)[number];
@@ -80,7 +81,10 @@ export const toRegisterFieldPayload = (draft: CustomFieldDraftModel) => {
     tooltip_label: draft.tooltip_label?.trim() || null,
     validator: draft.validator?.trim() || null,
     validator_ir: draft.validator_ir ?? null,
-    field_schema_defaults: draft.field_schema_defaults ?? null,
+    // Core types align_h/align_v as plain strings; the generated DTO narrows them to
+    // the server's enum. Same data, stricter description.
+    field_schema_defaults: (draft.field_schema_defaults ??
+      null) as RegisterFieldDto["field_schema_defaults"],
     is_phantom: draft.is_phantom ?? false,
   };
 };

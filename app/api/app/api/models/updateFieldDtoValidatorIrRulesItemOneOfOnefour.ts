@@ -9,6 +9,6 @@ import type { UpdateFieldDtoValidatorIrRulesItemOneOfOnefourKind } from "./updat
 
 export type UpdateFieldDtoValidatorIrRulesItemOneOfOnefour = {
   kind: UpdateFieldDtoValidatorIrRulesItemOneOfOnefourKind;
-  field: string;
+  businessDays: number;
   message?: string;
 };

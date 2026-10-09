@@ -24,4 +24,5 @@ export const FormFieldValidatorIrBaseType = {
   url: "url",
   signature: "signature",
   image: "image",
+  radio: "radio",
 } as const;

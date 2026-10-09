@@ -9,7 +9,7 @@ import { FormInput } from "@/components/docs/forms/EditForm";
 import { SimplePartiesList } from "@/components/docs/form-editor/form-layout/SimplePartiesList";
 import { PdfFilePreview } from "@/components/docs/form-editor/form-layout/PdfFilePreview";
 import { IFormMetadata, SCHEMA_VERSION } from "@betterinternship/core/forms";
-import { formsControllerRegisterForm } from "@/app/api";
+import { formsControllerRegisterForm, type RegisterFormSchemaDto } from "@/app/api";
 import { Card } from "@/components/ui/card";
 import { HeaderIcon, HeaderText } from "@/components/ui/text";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -109,6 +109,9 @@ const CreateFormPage = () => {
 
       await formsControllerRegisterForm({
         ...formMetadata,
+        // Core types block_type as a plain string; the generated DTO narrows it to the
+        // server's enum. Same data (and empty here), stricter type.
+        schema: formMetadata.schema as unknown as RegisterFormSchemaDto["schema"],
         base_document: pdfFile,
       });
 

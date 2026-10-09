@@ -12,6 +12,7 @@ import { Loader } from "@/components/ui/loader";
 import { toast } from "sonner";
 import { toastPresets } from "@/components/sonner-toaster";
 import { useFormsControllerGetLatestFormDocumentAndMetadata } from "@/app/api";
+import type { IFormMetadata } from "@betterinternship/core/forms";
 import { useFormDraft } from "@/app/contexts/form-draft.context";
 import { FormEditorMetadataProvider, useFormEditorMetadata } from "@/app/contexts/form-editor-metadata.context";
 import { EditorSelectionProvider } from "@/app/contexts/editor-selection.context";
@@ -100,7 +101,9 @@ function FormEditorContent() {
 
     try {
       if (formName && fetchedData?.formMetadata) {
-        loadFormMetadata(fetchedData.formMetadata);
+        // The generated FormMetadata flattens validator_ir into one loose shape; core's
+        // IFormMetadata ties each rule set to its baseType. Same data, stricter type.
+        loadFormMetadata(fetchedData.formMetadata as unknown as IFormMetadata);
         setFormDocument(fetchedData.formTemplate || null);
         setFormVersion(fetchedData.formVersion || null);
         setDocumentUrl(fetchedData.documentUrl || null);
