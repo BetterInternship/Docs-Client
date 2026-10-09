@@ -15,7 +15,6 @@ import { ISignatoryFormSettings } from "@/app/docs/auth/provider/form-settings.c
 import { CancelledFormDetailsModal } from "./modals/CancelledFormDetailsModal";
 import { SigningMapModal } from "./modals/SigningMapModal";
 import { SigningPartyMapParty } from "./docs/forms/SignignPartyTimeline";
-import { DuplicateSignatoryWarningModal } from "./modals/DuplicateSignatoryWarningModal";
 
 /**
  * Simplifies modal config since we usually reuse each of these modal stuffs.
@@ -108,27 +107,6 @@ export const useModalRegistry = () => {
           }
         ),
       close: () => close("signing-map"),
-    },
-
-    duplicateSignatoryWarning: {
-      open: (previousRoles: string[], currentRole: string, onConfirm: () => void) =>
-        open(
-          "duplicate-signatory-warning",
-          <DuplicateSignatoryWarningModal
-            previousRoles={previousRoles}
-            currentRole={currentRole}
-            onCancel={() => close("duplicate-signatory-warning")}
-            onConfirm={() => {
-              close("duplicate-signatory-warning");
-              onConfirm();
-            }}
-          />,
-          {
-            panelClassName: "sm:w-full sm:max-w-xl",
-            hasClose: false,
-          }
-        ),
-      close: () => close("duplicate-signatory-warning"),
     },
 
     // Complete profile modal

@@ -337,12 +337,6 @@ export function FormEditorMetadataProvider({
     setIsSaving(true);
     try {
       const normalizedMetadata = normalizeMetadataForSave(applySaveRules(state.present));
-      if (
-        normalizedMetadata.prevent_repeat_signing !== undefined &&
-        typeof normalizedMetadata.prevent_repeat_signing !== "boolean"
-      ) {
-        throw new Error("Prevent repeat fill-out must be enabled or disabled.");
-      }
       normalizedMetadata.signing_parties = normalizedMetadata.signing_parties.map((party) => {
         const options = getRecipientEmailOptions(party);
         if (options === undefined) return party;

@@ -15,10 +15,7 @@ export interface BlockImage {
   after: IFormBlock | null;
 }
 
-type MetaSlice = Pick<
-  IFormMetadata,
-  "label" | "name" | "schema_version" | "prevent_repeat_signing"
->;
+type MetaSlice = { label: string; name: string; schema_version: number };
 
 export interface Delta {
   blocks: BlockImage[];
@@ -126,13 +123,11 @@ export function computeDelta(prev: IFormMetadata, next: IFormMetadata): Delta | 
     label: prev.label,
     name: prev.name,
     schema_version: prev.schema_version,
-    prevent_repeat_signing: prev.prevent_repeat_signing,
   };
   const nextMeta: MetaSlice = {
     label: next.label,
     name: next.name,
     schema_version: next.schema_version,
-    prevent_repeat_signing: next.prevent_repeat_signing,
   };
   const meta =
     stableStringify(prevMeta) !== stableStringify(nextMeta)
@@ -266,7 +261,6 @@ function resolvePartyLabel(
 }
 
 const FRIENDLY_KEYS: Record<string, string> = {
-  prevent_repeat_signing: "Prevent repeat fill-out by the same email",
   label: "label",
   field: "field key",
   type: "type",
@@ -391,7 +385,7 @@ export function diffFormMetadata(
 
   // Meta
   const metaDeltas: FieldDelta[] = [];
-  for (const key of ["label", "name", "schema_version", "prevent_repeat_signing"] as const) {
+  for (const key of ["label", "name", "schema_version"] as const) {
     if (prev[key] !== next[key]) {
       metaDeltas.push({
         key,

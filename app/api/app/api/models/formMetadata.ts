@@ -10,7 +10,6 @@ import type { FormSigningParty } from "./formSigningParty";
 import type { FormSubscriber } from "./formSubscriber";
 
 export interface FormMetadata {
-  prevent_repeat_signing?: boolean;
   schema_version: number;
   name: string;
   label: string;

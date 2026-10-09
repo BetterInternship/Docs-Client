@@ -4,10 +4,11 @@ import { useFormProcess } from "@/components/docs/forms/form-process.ctx";
 import { useFormRendererContext } from "@/components/docs/forms/form-renderer.ctx";
 import { Button } from "@/components/ui/button";
 import { useSignatoryProfile } from "@/app/docs/auth/provider/signatory.ctx";
-import useModalRegistry from "@/components/modal-registry";
 import { getPreviousCompletedRoles } from "@/lib/repeat-signing";
 import { DuplicateSignatoryNotice } from "@/components/docs/forms/DuplicateSignatoryNotice";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+const FORWARD_ONLY_TOOLTIP = "You've already signed this previously. Forward to another signer.";
 
 type SignIntentGateProps = {
   onSignSelf: () => void;
@@ -19,7 +20,6 @@ export function SignIntentGate({ onSignSelf, onDelegate, forwardOnly }: SignInte
   const form = useFormRendererContext();
   const formProcess = useFormProcess();
   const profile = useSignatoryProfile();
-  const modalRegistry = useModalRegistry();
   const displayInformation = formProcess.display_information as Record<string, string>;
   const documentName = formProcess.form_label;
   const studentName = displayInformation?.["student.full-name:default"];
@@ -33,26 +33,12 @@ export function SignIntentGate({ onSignSelf, onDelegate, forwardOnly }: SignInte
   );
   const currentRole = signingParty?.signatory_title?.trim() || "this role";
 
-  const handleSignSelf = () => {
-    if (forwardOnly) return;
-    if (previousRoles.length) {
-      modalRegistry.duplicateSignatoryWarning.open(previousRoles, currentRole, onSignSelf);
-      return;
-    }
-
-    onSignSelf();
-  };
-
   return (
     <div className="mx-auto flex min-h-full w-full max-w-6xl items-start justify-center px-4 pt-4 pb-6 sm:h-full sm:items-center sm:px-6 sm:py-10">
       <div className="w-full">
         {forwardOnly && (
           <div className="mx-auto mb-5 max-w-5xl text-left">
-            <DuplicateSignatoryNotice
-              previousRoles={previousRoles}
-              currentRole={currentRole}
-              forwardOnly
-            />
+            <DuplicateSignatoryNotice previousRoles={previousRoles} currentRole={currentRole} />
           </div>
         )}
 
@@ -70,18 +56,14 @@ export function SignIntentGate({ onSignSelf, onDelegate, forwardOnly }: SignInte
               <span
                 className={forwardOnly ? "block h-full cursor-not-allowed" : "block h-full"}
                 tabIndex={forwardOnly ? 0 : undefined}
-                aria-label={
-                  forwardOnly
-                    ? "You've already signed this previously. Forward to another signer."
-                    : undefined
-                }
+                aria-label={forwardOnly ? FORWARD_ONLY_TOOLTIP : undefined}
               >
                 <Button
                   type="button"
                   variant="outline"
                   size="lg"
                   className="group h-full min-h-28 w-full flex-row items-stretch gap-0 overflow-hidden p-0 text-base whitespace-normal sm:min-h-56 sm:flex-col"
-                  onClick={handleSignSelf}
+                  onClick={onSignSelf}
                   disabled={forwardOnly}
                   aria-label={
                     forwardOnly
@@ -90,7 +72,7 @@ export function SignIntentGate({ onSignSelf, onDelegate, forwardOnly }: SignInte
                   }
                 >
                   <div className="flex w-28 shrink-0 items-center justify-center bg-gray-100 px-4 py-4 transition-colors group-hover:bg-gray-200 sm:min-h-36 sm:w-full sm:flex-1 sm:px-6 sm:py-8">
-                    <div className="bg-primary relative rounded-full p-4 opacity-85 sm:p-6">
+                    <div className="bg-primary rounded-full p-4 opacity-85 sm:p-6">
                       <img
                         src="/assets/sign-document.png"
                         alt=""
@@ -116,7 +98,7 @@ export function SignIntentGate({ onSignSelf, onDelegate, forwardOnly }: SignInte
                 side="bottom"
                 sideOffset={8}
               >
-                You&apos;ve already signed this previously. Forward to another signer.
+                {FORWARD_ONLY_TOOLTIP}
               </TooltipContent>
             )}
           </Tooltip>

@@ -1550,12 +1550,6 @@ export const formsControllerRegisterForm = (
   signal?: AbortSignal
 ) => {
   const formData = new FormData();
-  if (registerFormSchemaDto.prevent_repeat_signing !== undefined) {
-    formData.append(
-      `prevent_repeat_signing`,
-      registerFormSchemaDto.prevent_repeat_signing.toString()
-    );
-  }
   formData.append(`name`, registerFormSchemaDto.name);
   formData.append(`label`, registerFormSchemaDto.label);
   formData.append(`schema_version`, registerFormSchemaDto.schema_version.toString());

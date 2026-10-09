@@ -3,11 +3,9 @@ import { AlertTriangle } from "lucide-react";
 export function DuplicateSignatoryNotice({
   previousRoles,
   currentRole,
-  forwardOnly = false,
 }: {
   previousRoles: string[];
   currentRole: string;
-  forwardOnly?: boolean;
 }) {
   const roles =
     previousRoles.length > 2
@@ -23,18 +21,7 @@ export function DuplicateSignatoryNotice({
         <p className="font-medium">
           You&apos;ve already completed this form as {roles ? `the ${roles}` : "a previous role"}.
         </p>
-        <p>
-          {forwardOnly ? (
-            <>
-              You can only forward this step to another person to complete it as the {currentRole}.
-            </>
-          ) : (
-            <>
-              Are you sure you also want to sign it as the{" "}
-              <span className="font-semibold">{currentRole}</span>?
-            </>
-          )}
-        </p>
+        <p>You can only forward this step to another person to complete it as the {currentRole}.</p>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import type { SigningPartyMapParty } from "@/components/docs/forms/SignignPartyTimeline";
 
-/** The existing docs warning predicate, shared by the gate and submit controls. */
+/** Lists completed roles for the inline forward-only notice. */
 export function getPreviousCompletedRoles(
   parties: SigningPartyMapParty[] | undefined,
   currentPartyId: string | undefined,
